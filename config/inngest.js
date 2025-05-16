@@ -6,13 +6,16 @@
 // In the / src / inngest directory create an Inngest client:
 
 import { Inngest } from "inngest";
+import connectDB from "/bd";
+import User from "../models/User";
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "my-app" });
 
-export const syncUserCreation = inngest.createFunction({
-  id: "sync-user-from-clerk"
-},
+export const syncUserCreation = inngest.createFunction(
+  {
+    id: "sync-user-from-clerk",
+  },
   { event: "clerk/user.created" },
   async ({ event }) => {
     const { id, email_addresses, first_name, last_name } = event.data;
@@ -23,13 +26,14 @@ export const syncUserCreation = inngest.createFunction({
       imageUrl: image_url,
     };
     await connectDB();
-    await User.create(userData)
+    await User.create(userData);
   }
-)
+);
 
-export const syncUserUpdate = inngest.createFunction({
-  id: "sync-user-update-from-clerk"
-},
+export const syncUserUpdate = inngest.createFunction(
+  {
+    id: "sync-user-update-from-clerk",
+  },
   { event: "clerk/user.updated" },
   async ({ event }) => {
     const { id, email_addresses, first_name, last_name } = event.data;
@@ -40,18 +44,18 @@ export const syncUserUpdate = inngest.createFunction({
       imageUrl: image_url,
     };
     await connectDB();
-    await User.findByIdAndUpdate(id, userData)
+    await User.findByIdAndUpdate(id, userData);
   }
-)
+);
 
-export const syncUserDelete = inngest.createFunction({
-  id: "delete-user-from-clerk"
-},
+export const syncUserDelete = inngest.createFunction(
+  {
+    id: "delete-user-from-clerk",
+  },
   { event: "clerk/user.deleted" },
   async ({ event }) => {
     const { id } = event.data;
     await connectDB();
-    await User.findByIdAndDelete(id)
+    await User.findByIdAndDelete(id);
   }
-)
-
+);
